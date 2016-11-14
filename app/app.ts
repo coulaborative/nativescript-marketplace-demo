@@ -2,15 +2,18 @@
 // trace.setCategories(trace.categories.Style);
 // trace.enable();
 
+import application = require("application");
 import frame = require("ui/frame");
 import exampleBase = require("./examples/example-base-page");
-import application = require("application");
 import prof = require("./common/profiling");
 import * as trace from "trace";
 import * as analytics from "./common/analytics";
 import "./bundle-modules";
+import {onAppInit} from "./common/firebase";
 import * as utils from "utils/utils";
- 
+
+onAppInit();
+
 application.on("uncaughtError", args => {
     var error = args.android || args.ios;
     if (error.nativeException){
@@ -43,7 +46,7 @@ application.on(application.suspendEvent, data => {
 
 declare var org;
 if (application.android) {
-    application.onLaunch = function (intent) {
+    application.on("launch", args => {
         console.log("onLaunch");
         com.facebook.drawee.backends.pipeline.Fresco.initialize(application.android.context);
         application.android.onActivityStarted = function (activity) {
@@ -63,7 +66,7 @@ if (application.android) {
         if (analyticsProductKeyAndroid) {
             org.nativescript.ata.AnalyticsReportSender.init(application.android.nativeApp, analyticsProductKeyAndroid);
         }
-    }
+    });
 }
 
 if (application.ios) {
